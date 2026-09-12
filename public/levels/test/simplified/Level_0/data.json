@@ -1,0 +1,27 @@
+{
+  "identifier": "Level_0",
+  "uniqueIdentifer": "test-level-0",
+  "x": 0,
+  "y": 0,
+  "width": 640,
+  "height": 384,
+  "bgColor": "#0b0e11",
+  "neighbourLevels": [],
+  "customFields": {},
+  "layers": ["Walls.png", "Floor.png"],
+  "entities": {
+    "PlayerStart": [
+      {
+        "id": "PlayerStart",
+        "iid": "test-player-start",
+        "layer": "Entities",
+        "x": 112,
+        "y": 48,
+        "width": 16,
+        "height": 16,
+        "color": 14262081,
+        "customFields": {}
+      }
+    ]
+  }
+}

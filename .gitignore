@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.vite/
+*.log
+.DS_Store
+
+# Licensed tile packs and anything generated from them. Never commit these.
+art/packs/
+public/tiles/
