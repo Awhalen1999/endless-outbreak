@@ -4,8 +4,8 @@ import { Hub } from "./scenes/Hub";
 import { Mission } from "./scenes/Mission";
 import { Results } from "./scenes/Results";
 
-export const WIDTH = 480;
-export const HEIGHT = 270;
+const WIDTH = 480;
+const HEIGHT = 270;
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,

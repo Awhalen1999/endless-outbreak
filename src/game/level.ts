@@ -1,5 +1,6 @@
 import type Phaser from "phaser";
 import { Grid } from "../sim/grid";
+import type { Placement } from "../sim/world";
 import { COLLISION_LAYER, type LdtkEntity, type LdtkLevel, TILE } from "./ldtk";
 
 export interface LevelRef {
@@ -9,7 +10,6 @@ export interface LevelRef {
 }
 
 export interface BuiltLevel {
-  data: LdtkLevel;
   grid: Grid;
   entities: Record<string, LdtkEntity[] | undefined>;
 }
@@ -34,10 +34,18 @@ export function buildLevel(scene: Phaser.Scene, ref: LevelRef): BuiltLevel {
     scene.add.image(0, 0, `${ref.key}:${png}`).setOrigin(0).setDepth(depth);
   });
   const grid = Grid.fromCsv(scene.cache.text.get(`${ref.key}:collision`) as string, TILE);
-  return { data, grid, entities: data.entities };
+  return { grid, entities: data.entities };
 }
 
 /** Centre of an entity, in world pixels. */
 export function entityCentre(e: LdtkEntity): { x: number; y: number } {
   return { x: e.x + e.width / 2, y: e.y + e.height / 2 };
+}
+
+/** Zombie entities placed in the level. The LDtk `type` field picks the row in zombies.json. */
+export function zombiesOf(level: BuiltLevel): Placement[] {
+  return (level.entities.Zombie ?? []).map((e) => ({
+    ...entityCentre(e),
+    type: (e.customFields.type as string) ?? "walker",
+  }));
 }

@@ -1,0 +1,11 @@
+{
+  "walker": {
+    "speed": 40,
+    "hp": 3,
+    "damage": 1,
+    "sight": 112,
+    "reach": 12,
+    "windup": 0.35,
+    "cooldown": 1.0
+  }
+}

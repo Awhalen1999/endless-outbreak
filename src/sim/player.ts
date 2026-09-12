@@ -1,7 +1,7 @@
 import type { Grid } from "./grid";
 import { type Box, moveBox } from "./move";
 
-export const PLAYER = { w: 10, h: 10, speed: 90 } as const;
+export const PLAYER = { w: 10, h: 10, speed: 90, hp: 5 } as const;
 
 export interface PlayerInput {
   /** Movement axes in [-1, 1]. */
@@ -10,6 +10,8 @@ export interface PlayerInput {
   /** Aim target in world pixels. */
   aimX: number;
   aimY: number;
+  /** Trigger pulled this tick. */
+  fire: boolean;
 }
 
 export interface PlayerState {
@@ -18,6 +20,11 @@ export interface PlayerState {
   y: number;
   /** Aim angle in radians. */
   aim: number;
+  hp: number;
+  /** Row in weapons.json. */
+  weapon: string;
+  /** Seconds until it may fire again. */
+  cooldown: number;
 }
 
 export function playerBox(p: PlayerState): Box {
@@ -37,5 +44,11 @@ export function stepPlayer(
   const box = moveBox(grid, playerBox(p), dx, dy);
   const x = box.x + PLAYER.w / 2;
   const y = box.y + PLAYER.h / 2;
-  return { x, y, aim: Math.atan2(input.aimY - y, input.aimX - x) };
+  return {
+    ...p,
+    x,
+    y,
+    aim: Math.atan2(input.aimY - y, input.aimX - x),
+    cooldown: Math.max(0, p.cooldown - dt),
+  };
 }

@@ -1,0 +1,9 @@
+{
+  "pistol": {
+    "damage": 1,
+    "interval": 0.25,
+    "range": 160,
+    "noise": 160,
+    "knockback": 4
+  }
+}

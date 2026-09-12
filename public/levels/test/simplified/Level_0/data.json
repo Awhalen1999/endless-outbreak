@@ -10,6 +10,99 @@
   "customFields": {},
   "layers": ["Walls.png", "Floor.png"],
   "entities": {
+    "Zombie": [
+      {
+        "id": "Zombie",
+        "iid": "test-zombie-0",
+        "layer": "Entities",
+        "x": 448,
+        "y": 32,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {
+          "type": "walker"
+        }
+      },
+      {
+        "id": "Zombie",
+        "iid": "test-zombie-1",
+        "layer": "Entities",
+        "x": 544,
+        "y": 32,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {
+          "type": "walker"
+        }
+      },
+      {
+        "id": "Zombie",
+        "iid": "test-zombie-2",
+        "layer": "Entities",
+        "x": 176,
+        "y": 160,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {
+          "type": "walker"
+        }
+      },
+      {
+        "id": "Zombie",
+        "iid": "test-zombie-3",
+        "layer": "Entities",
+        "x": 224,
+        "y": 272,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {
+          "type": "walker"
+        }
+      },
+      {
+        "id": "Zombie",
+        "iid": "test-zombie-4",
+        "layer": "Entities",
+        "x": 320,
+        "y": 272,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {
+          "type": "walker"
+        }
+      },
+      {
+        "id": "Zombie",
+        "iid": "test-zombie-5",
+        "layer": "Entities",
+        "x": 480,
+        "y": 288,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {
+          "type": "walker"
+        }
+      },
+      {
+        "id": "Zombie",
+        "iid": "test-zombie-6",
+        "layer": "Entities",
+        "x": 544,
+        "y": 288,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {
+          "type": "walker"
+        }
+      }
+    ],
     "PlayerStart": [
       {
         "id": "PlayerStart",

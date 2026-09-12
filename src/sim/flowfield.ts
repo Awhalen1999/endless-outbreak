@@ -2,6 +2,21 @@ import type { Grid } from "./grid";
 
 export const UNREACHABLE = -1;
 
+const CARDINAL: ReadonlyArray<readonly [number, number]> = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+];
+
+const ALL_DIRS: ReadonlyArray<readonly [number, number]> = [
+  ...CARDINAL,
+  [1, 1],
+  [1, -1],
+  [-1, 1],
+  [-1, -1],
+];
+
 /** BFS distance from every open tile to the target. One call serves every zombie. */
 export function computeFlowField(grid: Grid, targetTx: number, targetTy: number): Int32Array {
   const field = new Int32Array(grid.cols * grid.rows).fill(UNREACHABLE);
@@ -59,17 +74,19 @@ export function nextStep(
   return best;
 }
 
-const CARDINAL: ReadonlyArray<readonly [number, number]> = [
-  [1, 0],
-  [-1, 0],
-  [0, 1],
-  [0, -1],
-];
+/** Fields depend only on the grid and the target tile, so they are computed once and kept. */
+export class FieldCache {
+  private readonly fields = new Map<number, Int32Array>();
 
-const ALL_DIRS: ReadonlyArray<readonly [number, number]> = [
-  ...CARDINAL,
-  [1, 1],
-  [1, -1],
-  [-1, 1],
-  [-1, -1],
-];
+  constructor(readonly grid: Grid) {}
+
+  get(tx: number, ty: number): Int32Array {
+    const key = this.grid.index(tx, ty);
+    let field = this.fields.get(key);
+    if (!field) {
+      field = computeFlowField(this.grid, tx, ty);
+      this.fields.set(key, field);
+    }
+    return field;
+  }
+}
