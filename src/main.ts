@@ -1,8 +1,7 @@
 import Phaser from "phaser";
+import { Base } from "./scenes/Base";
 import { Boot } from "./scenes/Boot";
-import { Hub } from "./scenes/Hub";
 import { Mission } from "./scenes/Mission";
-import { Results } from "./scenes/Results";
 
 const WIDTH = 480;
 const HEIGHT = 270;
@@ -15,7 +14,7 @@ const game = new Phaser.Game({
   pixelArt: true,
   backgroundColor: "#0b0e11",
   scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [Boot, Hub, Mission, Results],
+  scene: [Boot, Base, Mission],
 });
 
 // Whole-number zoom only, so every game pixel is a square block of screen pixels.

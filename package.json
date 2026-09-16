@@ -12,7 +12,7 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "grade": "node scripts/grade.mjs",
-    "level:test": "node scripts/make-test-level.mjs"
+    "levels": "node scripts/make-test-level.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0"

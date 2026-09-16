@@ -1,6 +1,7 @@
 import type Phaser from "phaser";
 import { Grid } from "../sim/grid";
 import type { Placement } from "../sim/world";
+import type { Zone, ZoneKind } from "../sim/zone";
 import { COLLISION_LAYER, type LdtkEntity, type LdtkLevel, TILE } from "./ldtk";
 
 export interface LevelRef {
@@ -48,4 +49,13 @@ export function zombiesOf(level: BuiltLevel): Placement[] {
     ...entityCentre(e),
     type: (e.customFields.type as string) ?? "walker",
   }));
+}
+
+const ZONE_ENTITIES: Record<string, ZoneKind> = { Objective: "objective", Exit: "exit" };
+
+/** Walk-over rectangles: the item and the way out. */
+export function zonesOf(level: BuiltLevel): Zone[] {
+  return Object.entries(ZONE_ENTITIES).flatMap(([name, kind]) =>
+    (level.entities[name] ?? []).map((e) => ({ kind, x: e.x, y: e.y, w: e.width, h: e.height })),
+  );
 }

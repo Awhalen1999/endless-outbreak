@@ -1,22 +1,22 @@
 import Phaser from "phaser";
-import { type LevelRef, queueLevelAssets, queueLevelData } from "../game/level";
+import { MISSIONS, missionRef } from "../game/data";
+import { queueLevelAssets, queueLevelData } from "../game/level";
 
-const TEST_LEVEL: LevelRef = { key: "test", dir: "levels/test/simplified/Level_0" };
+const LEVELS = MISSIONS.map(missionRef);
 
+/** Loads every level up front, then opens the base screen. */
 export class Boot extends Phaser.Scene {
   constructor() {
     super("Boot");
   }
 
   preload(): void {
-    queueLevelData(this, TEST_LEVEL);
+    for (const ref of LEVELS) queueLevelData(this, ref);
   }
 
   create(): void {
-    queueLevelAssets(this, TEST_LEVEL);
-    this.load.once(Phaser.Loader.Events.COMPLETE, () => {
-      this.scene.start("Mission", { level: TEST_LEVEL });
-    });
+    for (const ref of LEVELS) queueLevelAssets(this, ref);
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => this.scene.start("Base"));
     this.load.start();
   }
 }

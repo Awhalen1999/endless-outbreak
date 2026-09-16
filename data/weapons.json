@@ -5,5 +5,19 @@
     "range": 160,
     "noise": 160,
     "knockback": 4
+  },
+  "silenced": {
+    "damage": 1,
+    "interval": 0.3,
+    "range": 140,
+    "noise": 48,
+    "knockback": 3
+  },
+  "machinegun": {
+    "damage": 1,
+    "interval": 0.08,
+    "range": 180,
+    "noise": 200,
+    "knockback": 2
   }
 }

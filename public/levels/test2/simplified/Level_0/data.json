@@ -1,22 +1,35 @@
 {
   "identifier": "Level_0",
-  "uniqueIdentifer": "test-level-0",
+  "uniqueIdentifer": "test2-level-0",
   "x": 0,
   "y": 0,
-  "width": 640,
-  "height": 384,
+  "width": 480,
+  "height": 336,
   "bgColor": "#0b0e11",
   "neighbourLevels": [],
   "customFields": {},
   "layers": ["Walls.png", "Floor.png"],
   "entities": {
+    "PlayerStart": [
+      {
+        "id": "PlayerStart",
+        "iid": "test2-PlayerStart-0",
+        "layer": "Entities",
+        "x": 16,
+        "y": 16,
+        "width": 16,
+        "height": 16,
+        "color": 13121325,
+        "customFields": {}
+      }
+    ],
     "Zombie": [
       {
         "id": "Zombie",
-        "iid": "test-Zombie-0",
+        "iid": "test2-Zombie-0",
         "layer": "Entities",
-        "x": 448,
-        "y": 32,
+        "x": 304,
+        "y": 48,
         "width": 16,
         "height": 16,
         "color": 13121325,
@@ -26,10 +39,10 @@
       },
       {
         "id": "Zombie",
-        "iid": "test-Zombie-1",
+        "iid": "test2-Zombie-1",
         "layer": "Entities",
-        "x": 544,
-        "y": 32,
+        "x": 160,
+        "y": 112,
         "width": 16,
         "height": 16,
         "color": 13121325,
@@ -39,10 +52,10 @@
       },
       {
         "id": "Zombie",
-        "iid": "test-Zombie-2",
+        "iid": "test2-Zombie-2",
         "layer": "Entities",
-        "x": 176,
-        "y": 160,
+        "x": 336,
+        "y": 112,
         "width": 16,
         "height": 16,
         "color": 13121325,
@@ -52,10 +65,10 @@
       },
       {
         "id": "Zombie",
-        "iid": "test-Zombie-3",
+        "iid": "test2-Zombie-3",
         "layer": "Entities",
-        "x": 224,
-        "y": 272,
+        "x": 336,
+        "y": 176,
         "width": 16,
         "height": 16,
         "color": 13121325,
@@ -65,10 +78,10 @@
       },
       {
         "id": "Zombie",
-        "iid": "test-Zombie-4",
+        "iid": "test2-Zombie-4",
         "layer": "Entities",
-        "x": 320,
-        "y": 272,
+        "x": 48,
+        "y": 240,
         "width": 16,
         "height": 16,
         "color": 13121325,
@@ -78,10 +91,10 @@
       },
       {
         "id": "Zombie",
-        "iid": "test-Zombie-5",
+        "iid": "test2-Zombie-5",
         "layer": "Entities",
-        "x": 480,
-        "y": 288,
+        "x": 288,
+        "y": 240,
         "width": 16,
         "height": 16,
         "color": 13121325,
@@ -91,9 +104,9 @@
       },
       {
         "id": "Zombie",
-        "iid": "test-Zombie-6",
+        "iid": "test2-Zombie-6",
         "layer": "Entities",
-        "x": 544,
+        "x": 48,
         "y": 288,
         "width": 16,
         "height": 16,
@@ -103,13 +116,13 @@
         }
       }
     ],
-    "PlayerStart": [
+    "Objective": [
       {
-        "id": "PlayerStart",
-        "iid": "test-PlayerStart-0",
+        "id": "Objective",
+        "iid": "test2-Objective-0",
         "layer": "Entities",
-        "x": 112,
-        "y": 48,
+        "x": 240,
+        "y": 176,
         "width": 16,
         "height": 16,
         "color": 13121325,
@@ -119,23 +132,10 @@
     "Exit": [
       {
         "id": "Exit",
-        "iid": "test-Exit-0",
+        "iid": "test2-Exit-0",
         "layer": "Entities",
-        "x": 16,
-        "y": 112,
-        "width": 16,
-        "height": 16,
-        "color": 13121325,
-        "customFields": {}
-      }
-    ],
-    "Objective": [
-      {
-        "id": "Objective",
-        "iid": "test-Objective-0",
-        "layer": "Entities",
-        "x": 272,
-        "y": 320,
+        "x": 432,
+        "y": 304,
         "width": 16,
         "height": 16,
         "color": 13121325,

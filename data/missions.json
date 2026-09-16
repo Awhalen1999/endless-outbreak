@@ -1,0 +1,14 @@
+[
+  {
+    "id": "test",
+    "name": "Test house",
+    "dir": "levels/test/simplified/Level_0",
+    "unlocks": "silenced"
+  },
+  {
+    "id": "test2",
+    "name": "Test house 2",
+    "dir": "levels/test2/simplified/Level_0",
+    "unlocks": "machinegun"
+  }
+]
