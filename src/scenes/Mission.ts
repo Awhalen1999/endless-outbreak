@@ -9,6 +9,7 @@ import {
   zombiesOf,
   zonesOf,
 } from "../game/level";
+import { Menu } from "../game/menu";
 import { PlayerView } from "../game/playerView";
 import { loadSave } from "../game/save";
 import { ZombieView } from "../game/zombieView";
@@ -19,11 +20,11 @@ import { createWorld, stepWorld, type World } from "../sim/world";
 import type { MissionResult } from "./Base";
 
 type Keys = Record<
-  "W" | "A" | "S" | "D" | "UP" | "LEFT" | "DOWN" | "RIGHT" | "E",
+  "W" | "A" | "S" | "D" | "UP" | "LEFT" | "DOWN" | "RIGHT" | "E" | "ENTER" | "ESC",
   Phaser.Input.Keyboard.Key
 >;
 
-/** Every level runs here, the base included: it is a level with two stations and no zombies. */
+/** One mission: the level, the sim stepping at 60 Hz, and the views that draw it. */
 export class Mission extends Phaser.Scene {
   private level!: LevelRef;
   private world!: World;
@@ -33,6 +34,7 @@ export class Mission extends Phaser.Scene {
   private fx!: FxView;
   private debug!: DebugView;
   private hud!: Phaser.GameObjects.Text;
+  private pause?: { backdrop: Phaser.GameObjects.Rectangle; menu: Menu };
   private keys!: Keys;
   private readonly step = new FixedStep(60);
   /** A tap is latched until a sim step consumes it: a frame may run zero steps and would drop it. */
@@ -69,7 +71,7 @@ export class Mission extends Phaser.Scene {
 
     const keyboard = this.input.keyboard;
     if (!keyboard) throw new Error("keyboard input unavailable");
-    this.keys = keyboard.addKeys("W,A,S,D,UP,LEFT,DOWN,RIGHT") as Keys;
+    this.keys = keyboard.addKeys("W,A,S,D,UP,LEFT,DOWN,RIGHT,E,ENTER,ESC") as Keys;
     keyboard.on("keydown-BACKTICK", () => this.debug.toggle());
     this.input.on("pointerdown", () => {
       this.fire = true;
@@ -85,6 +87,15 @@ export class Mission extends Phaser.Scene {
   }
 
   override update(_time: number, delta: number): void {
+    if (this.pause) {
+      this.updatePause();
+      return;
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.keys.ESC)) {
+      this.openPause();
+      return;
+    }
+
     const input = this.readInput();
     this.step.advance(delta, (dt) => {
       stepWorld(this.world, { ...input, fire: this.fire || this.held }, dt);
@@ -102,6 +113,48 @@ export class Mission extends Phaser.Scene {
       };
       this.scene.start("Base", result);
     }
+  }
+
+  /** Esc: the sim stops and a small menu offers resume or the way back to base. */
+  private openPause(): void {
+    const { width, height } = this.scale;
+    const backdrop = this.add
+      .rectangle(width / 2, height / 2, width, height, 0x0b0e11, 0.7)
+      .setScrollFactor(0)
+      .setDepth(299);
+    const menu = new Menu(
+      this,
+      width / 2 - 40,
+      height / 2 - 20,
+      "paused",
+      ["resume", "quit to base"],
+      0,
+      (i) => {
+        if (i === 0) this.closePause();
+        else this.scene.start("Base");
+      },
+    );
+    menu.setFocus(true);
+    this.pause = { backdrop, menu };
+  }
+
+  private closePause(): void {
+    this.pause?.backdrop.destroy();
+    this.pause?.menu.destroy();
+    this.pause = undefined;
+    this.fire = false;
+    this.held = false;
+  }
+
+  private updatePause(): void {
+    const menu = this.pause?.menu;
+    if (!menu) return;
+    const k = this.keys;
+    const down = Phaser.Input.Keyboard.JustDown;
+    if (down(k.W) || down(k.UP)) menu.move(-1);
+    if (down(k.S) || down(k.DOWN)) menu.move(1);
+    if (down(k.ESC)) this.closePause();
+    else if (down(k.E) || down(k.ENTER)) menu.pick();
   }
 
   private sync(): void {

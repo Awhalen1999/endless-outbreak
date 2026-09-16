@@ -60,6 +60,11 @@ export class Menu {
     this.onPick(this.index);
   }
 
+  destroy(): void {
+    this.heading.destroy();
+    for (const row of this.rows) row.destroy();
+  }
+
   private render(): void {
     this.heading.setColor(this.focused ? INK : DIM);
     this.rows.forEach((row, i) => {
@@ -69,6 +74,10 @@ export class Menu {
   }
 }
 
+/** Menus are UI: pinned to the screen and drawn over everything. */
 function text(scene: Phaser.Scene, x: number, y: number, s: string, color: string) {
-  return scene.add.text(x, y, s, { fontFamily: "monospace", fontSize: "8px", color });
+  return scene.add
+    .text(x, y, s, { fontFamily: "monospace", fontSize: "8px", color })
+    .setScrollFactor(0)
+    .setDepth(300);
 }

@@ -8,7 +8,10 @@
   "bgColor": "#0b0e11",
   "neighbourLevels": [],
   "customFields": {},
-  "layers": ["Walls.png", "Floor.png"],
+  "layers": [
+    "Walls.png",
+    "Floor.png"
+  ],
   "entities": {
     "Zombie": [
       {

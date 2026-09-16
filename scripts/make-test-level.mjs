@@ -1,10 +1,40 @@
-// Writes hand-made levels in the exact shape of LDtk's Super Simple Export,
-// so the loader is proven before LDtk is even installed.
+// Writes hand-made levels in the exact shape of LDtk's Super Simple Export, tiled from
+// TheLazyStone's Post-Apocalypse pack (art/packs/lazystone, gitignored).
 //   '#' wall  '.' floor  'P' player start  'Z' idle zombie  'O' objective  'E' exit
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import sharp from "sharp";
 
 const TILE = 16;
+const PACK = "art/packs/lazystone/Tiles";
+const GROUND = `${PACK}/Background_Dark-Green_TileSet.png`;
+const BRICK = `${PACK}/Brick-Wall_TileSet.png`;
+
+// Tile picks as [column, row] on the sheets. Repeats weight the random choice.
+const GRASS = [
+  [0, 2],
+  [5, 0],
+  [2, 0],
+  [0, 2],
+  [5, 0],
+  [2, 0],
+  [0, 0],
+];
+const FLOWERS = [3, 0];
+const WALL_FACE = [
+  [3, 1],
+  [3, 1],
+  [3, 1],
+  [5, 1],
+];
+const WALL_CAP = [
+  [5, 0],
+  [5, 0],
+  [5, 0],
+  [1, 0],
+  [2, 0],
+  [3, 0],
+];
+const WALL_CAP_MOSS = [4, 0];
 
 const ENTITY = {
   P: "PlayerStart",
@@ -64,10 +94,37 @@ const TEST2 = [
   "##############################",
 ];
 
-const rgba = (hex, a = 255) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255, a];
-const FLOOR = [rgba(0x2a2f36), rgba(0x272c33)];
-const WALL = rgba(0x4a5563);
-const WALL_EDGE = rgba(0x1c2129);
+/** Stable pseudo-random 0..1 per tile, so a regenerated level looks the same. */
+function noise(tx, ty, salt) {
+  let h = (tx * 374761393 + ty * 668265263 + salt * 2246822519) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return (h >>> 8) / 16777216;
+}
+
+const pick = (list, tx, ty, salt) => list[Math.floor(noise(tx, ty, salt) * list.length)];
+
+const tiles = new Map();
+async function tile(sheet, [tx, ty]) {
+  const key = `${sheet}:${tx},${ty}`;
+  if (!tiles.has(key)) {
+    tiles.set(
+      key,
+      await sharp(sheet)
+        .extract({ left: tx * TILE, top: ty * TILE, width: TILE, height: TILE })
+        .ensureAlpha()
+        .raw()
+        .toBuffer(),
+    );
+  }
+  return tiles.get(key);
+}
+
+function blit(layer, layerWidth, tx, ty, src) {
+  for (let y = 0; y < TILE; y++) {
+    const from = y * TILE * 4;
+    src.copy(layer, ((ty * TILE + y) * layerWidth + tx * TILE) * 4, from, from + TILE * 4);
+  }
+}
 
 async function writeLevel(name, map) {
   const rows = map.length;
@@ -78,8 +135,8 @@ async function writeLevel(name, map) {
 
   const floor = Buffer.alloc(W * H * 4);
   const walls = Buffer.alloc(W * H * 4);
-  const put = (buf, x, y, px) => buf.set(px, (y * W + x) * 4);
   const entities = {};
+  const wallAt = (tx, ty) => map[ty]?.[tx] === "#";
 
   for (let ty = 0; ty < rows; ty++) {
     for (let tx = 0; tx < cols; tx++) {
@@ -99,13 +156,17 @@ async function writeLevel(name, map) {
           customFields: ch === "Z" ? { type: "walker" } : {},
         });
       }
-      for (let y = 0; y < TILE; y++) {
-        for (let x = 0; x < TILE; x++) {
-          const px = tx * TILE + x;
-          const py = ty * TILE + y;
-          put(floor, px, py, FLOOR[(tx + ty) & 1]);
-          if (ch === "#") put(walls, px, py, y >= TILE - 3 || y === 0 ? WALL_EDGE : WALL);
-        }
+      const grass = noise(tx, ty, 7) < 0.04 ? FLOWERS : pick(GRASS, tx, ty, 1);
+      blit(floor, W, tx, ty, await tile(GROUND, grass));
+      if (ch === "#") {
+        // A wall with open ground above shows its capped top; one under another wall is plain face.
+        const capped = !wallAt(tx, ty - 1);
+        const brick = capped
+          ? noise(tx, ty, 5) < 0.08
+            ? WALL_CAP_MOSS
+            : pick(WALL_CAP, tx, ty, 3)
+          : pick(WALL_FACE, tx, ty, 2);
+        blit(walls, W, tx, ty, await tile(BRICK, brick));
       }
     }
   }
@@ -139,5 +200,10 @@ async function writeLevel(name, map) {
   console.log(`wrote ${out} (${cols}x${rows} tiles)`);
 }
 
+await access(PACK).catch(() => {
+  throw new Error(
+    `tile pack not found at ${PACK}: unzip TheLazyStone's pack into art/packs/lazystone`,
+  );
+});
 await writeLevel("test", TEST);
 await writeLevel("test2", TEST2);
