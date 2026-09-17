@@ -11,6 +11,7 @@ import {
 } from "../game/level";
 import { LevelView } from "../game/levelView";
 import { Menu } from "../game/menu";
+import { MinimapView } from "../game/minimapView";
 import { PlayerView } from "../game/playerView";
 import { loadSave } from "../game/save";
 import { ZombieView } from "../game/zombieView";
@@ -21,7 +22,7 @@ import { createWorld, stepWorld, type World } from "../sim/world";
 import type { MissionResult } from "./Base";
 
 type Keys = Record<
-  "W" | "A" | "S" | "D" | "UP" | "LEFT" | "DOWN" | "RIGHT" | "E" | "R" | "ENTER" | "ESC",
+  "W" | "A" | "S" | "D" | "UP" | "LEFT" | "DOWN" | "RIGHT" | "E" | "R" | "M" | "ENTER" | "ESC",
   Phaser.Input.Keyboard.Key
 >;
 
@@ -33,6 +34,7 @@ export class Mission extends Phaser.Scene {
   private zombies!: ZombieView;
   private zones!: ZoneView;
   private fx!: FxView;
+  private minimap!: MinimapView;
   private debug!: DebugView;
   private hud!: Phaser.GameObjects.Text;
   private pause?: { backdrop: Phaser.GameObjects.Rectangle; menu: Menu };
@@ -65,6 +67,7 @@ export class Mission extends Phaser.Scene {
     this.zombies = new ZombieView(this);
     this.zones = new ZoneView(this);
     this.fx = new FxView(this);
+    this.minimap = new MinimapView(this, level.grid);
     this.debug = new DebugView(this);
     this.hud = this.add
       .text(4, 4, "", { fontFamily: "monospace", fontSize: "8px" })
@@ -73,8 +76,9 @@ export class Mission extends Phaser.Scene {
 
     const keyboard = this.input.keyboard;
     if (!keyboard) throw new Error("keyboard input unavailable");
-    this.keys = keyboard.addKeys("W,A,S,D,UP,LEFT,DOWN,RIGHT,E,R,ENTER,ESC") as Keys;
+    this.keys = keyboard.addKeys("W,A,S,D,UP,LEFT,DOWN,RIGHT,E,R,M,ENTER,ESC") as Keys;
     keyboard.on("keydown-BACKTICK", () => this.debug.toggle());
+    keyboard.on("keydown-M", () => this.minimap.toggle());
     this.input.on("pointerdown", () => {
       this.fire = true;
       this.held = true;
@@ -168,6 +172,7 @@ export class Mission extends Phaser.Scene {
     for (const s of w.shots) this.fx.tracer(s);
     for (const d of w.deaths) this.fx.blood(d.x, d.y);
     w.emitted.length = w.shots.length = w.deaths.length = 0;
+    this.minimap.sync(w);
     this.debug.sync(w);
 
     const item = w.carrying ? "   ITEM" : "";
