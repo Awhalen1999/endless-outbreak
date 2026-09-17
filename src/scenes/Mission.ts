@@ -9,6 +9,7 @@ import {
   zombiesOf,
   zonesOf,
 } from "../game/level";
+import { LevelView } from "../game/levelView";
 import { Menu } from "../game/menu";
 import { PlayerView } from "../game/playerView";
 import { loadSave } from "../game/save";
@@ -59,6 +60,7 @@ export class Mission extends Phaser.Scene {
     // Dev builds expose the sim for poking at from the console.
     if (import.meta.env.DEV) (window as unknown as { eo: World }).eo = this.world;
 
+    new LevelView(this, level.grid);
     this.player = new PlayerView(this);
     this.zombies = new ZombieView(this);
     this.zones = new ZoneView(this);

@@ -1,6 +1,6 @@
 /**
- * Shapes from LDtk's "Super Simple Export": one folder per level holding
- * data.json, one PNG per layer, and one CSV per IntGrid layer.
+ * Shapes from LDtk's "Super Simple Export", minus the art: one folder per level
+ * holding data.json and one CSV per IntGrid layer.
  */
 export interface LdtkEntity {
   id: string;
@@ -22,8 +22,6 @@ export interface LdtkLevel {
   width: number;
   height: number;
   bgColor: string;
-  /** Layer PNG filenames, top-most first. */
-  layers: string[];
   entities: Record<string, LdtkEntity[] | undefined>;
   customFields: Record<string, unknown>;
 }

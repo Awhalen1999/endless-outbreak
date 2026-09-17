@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { MISSIONS, missionRef } from "../game/data";
-import { queueLevelAssets, queueLevelData } from "../game/level";
+import { queueLevel } from "../game/level";
 
 const LEVELS = MISSIONS.map(missionRef);
 
@@ -11,12 +11,10 @@ export class Boot extends Phaser.Scene {
   }
 
   preload(): void {
-    for (const ref of LEVELS) queueLevelData(this, ref);
+    for (const ref of LEVELS) queueLevel(this, ref);
   }
 
   create(): void {
-    for (const ref of LEVELS) queueLevelAssets(this, ref);
-    this.load.once(Phaser.Loader.Events.COMPLETE, () => this.scene.start("Base"));
-    this.load.start();
+    this.scene.start("Base");
   }
 }
