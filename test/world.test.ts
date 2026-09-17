@@ -4,7 +4,7 @@ import { createWorld, stepWorld } from "../src/sim/world";
 import type { Zone } from "../src/sim/zone";
 
 const grid = Grid.fromStrings(["##########", "#........#", "#........#", "##########"], 16);
-const idle = { moveX: 0, moveY: 0, aimX: 0, aimY: 0, fire: false };
+const idle = { moveX: 0, moveY: 0, aimX: 0, aimY: 0, fire: false, reload: false };
 const objective: Zone = { kind: "objective", x: 48, y: 16, w: 16, h: 16 };
 const exit: Zone = { kind: "exit", x: 112, y: 16, w: 16, h: 16 };
 

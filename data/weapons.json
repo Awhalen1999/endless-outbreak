@@ -4,20 +4,26 @@
     "interval": 0.25,
     "range": 160,
     "noise": 160,
-    "knockback": 4
+    "knockback": 4,
+    "mag": 12,
+    "reload": 1.2
   },
   "silenced": {
     "damage": 1,
     "interval": 0.3,
     "range": 140,
     "noise": 48,
-    "knockback": 3
+    "knockback": 3,
+    "mag": 10,
+    "reload": 1.4
   },
   "machinegun": {
     "damage": 1,
     "interval": 0.08,
     "range": 180,
     "noise": 200,
-    "knockback": 2
+    "knockback": 2,
+    "mag": 30,
+    "reload": 2
   }
 }

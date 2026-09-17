@@ -20,7 +20,7 @@ function world(...zombieXs: number[]): World {
   return w;
 }
 
-const idle = { moveX: 0, moveY: 0, aimX: 300, aimY: 24, fire: false };
+const idle = { moveX: 0, moveY: 0, aimX: 300, aimY: 24, fire: false, reload: false };
 
 describe("pistol", () => {
   it("hits the first zombie in line and wakes it", () => {
@@ -55,5 +55,33 @@ describe("pistol", () => {
     expect(w.shots.length).toBe(4);
     expect(w.emitted.length).toBe(4);
     expect(w.emitted[0]?.radius).toBe(pistol.noise);
+  });
+});
+
+describe("ammo", () => {
+  it("spends a round per shot and reloads itself when the mag runs dry", () => {
+    const w = world();
+    const tick = 1 / 60;
+    for (let i = 0; i < pistol.mag; i++) stepWorld(w, { ...idle, fire: true }, pistol.interval);
+    expect(w.player.ammo).toBe(0);
+    expect(w.shots.length).toBe(pistol.mag);
+
+    stepWorld(w, { ...idle, fire: true }, tick);
+    expect(w.player.reload).toBeGreaterThan(0);
+    expect(w.shots.length).toBe(pistol.mag);
+
+    for (let i = 0; i < Math.ceil(pistol.reload / tick); i++) stepWorld(w, idle, tick);
+    expect(w.player.reload).toBe(0);
+    expect(w.player.ammo).toBe(pistol.mag);
+  });
+
+  it("reloads on request, and ignores the request on a full mag", () => {
+    const w = world();
+    stepWorld(w, { ...idle, reload: true }, 1 / 60);
+    expect(w.player.reload).toBe(0);
+
+    stepWorld(w, { ...idle, fire: true }, 1 / 60);
+    stepWorld(w, { ...idle, reload: true }, 1 / 60);
+    expect(w.player.reload).toBeGreaterThan(0);
   });
 });

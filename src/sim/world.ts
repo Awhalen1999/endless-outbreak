@@ -2,7 +2,7 @@ import { FieldCache } from "./flowfield";
 import type { Grid } from "./grid";
 import { PLAYER, type PlayerInput, type PlayerState, playerBox, stepPlayer } from "./player";
 import type { Sound } from "./sense";
-import { fireWeapon, type Shot, WEAPONS } from "./weapon";
+import { canFire, fireWeapon, type Shot, stepReload, WEAPONS } from "./weapon";
 import { createZombie, stepZombie, type Zombie } from "./zombie";
 import { overlaps, type Zone } from "./zone";
 
@@ -45,7 +45,16 @@ export function createWorld(
   return {
     grid,
     fields: new FieldCache(grid),
-    player: { x: start.x, y: start.y, aim: 0, hp: PLAYER.hp, weapon, cooldown: 0 },
+    player: {
+      x: start.x,
+      y: start.y,
+      aim: 0,
+      hp: PLAYER.hp,
+      weapon,
+      cooldown: 0,
+      ammo: WEAPONS[weapon]?.mag ?? 0,
+      reload: 0,
+    },
     zombies: zombies.map((z, i) => createZombie(i + 1, z.type, z.x, z.y)),
     zones,
     carrying: false,
@@ -64,15 +73,19 @@ function emitSound(w: World, s: Sound): void {
   w.emitted.push(s);
 }
 
-/** One fixed tick, in a fixed order: player, shot, zombies, the dead, zones, then sounds are spent. */
+/** One fixed tick, in a fixed order: player, ammo, shot, zombies, the dead, zones, then sounds are spent. */
 export function stepWorld(w: World, input: PlayerInput, dt: number): void {
   w.player = stepPlayer(w.player, input, w.grid, dt);
 
   const weapon = WEAPONS[w.player.weapon];
-  if (input.fire && weapon && w.player.cooldown === 0) {
-    w.shots.push(fireWeapon(w, weapon));
-    emitSound(w, { x: w.player.x, y: w.player.y, radius: weapon.noise });
-    w.player.cooldown = weapon.interval;
+  if (weapon) {
+    stepReload(w.player, weapon, input.reload, dt);
+    if (input.fire && canFire(w.player)) {
+      w.shots.push(fireWeapon(w, weapon));
+      emitSound(w, { x: w.player.x, y: w.player.y, radius: weapon.noise });
+      w.player.cooldown = weapon.interval;
+      w.player.ammo -= 1;
+    }
   }
 
   for (const z of w.zombies) stepZombie(z, w, dt);

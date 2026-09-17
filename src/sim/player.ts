@@ -12,6 +12,8 @@ export interface PlayerInput {
   aimY: number;
   /** Trigger pulled this tick. */
   fire: boolean;
+  /** Reload asked for this tick. */
+  reload: boolean;
 }
 
 export interface PlayerState {
@@ -25,6 +27,10 @@ export interface PlayerState {
   weapon: string;
   /** Seconds until it may fire again. */
   cooldown: number;
+  /** Rounds left in the magazine. */
+  ammo: number;
+  /** Seconds left of the reload, or 0 when not reloading. */
+  reload: number;
 }
 
 export function playerBox(p: PlayerState): Box {

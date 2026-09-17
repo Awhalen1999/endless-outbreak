@@ -1,5 +1,6 @@
 import weaponTypes from "../../data/weapons.json";
 import { moveBox } from "./move";
+import type { PlayerState } from "./player";
 import type { World } from "./world";
 import { ZOMBIE_SIZE, type Zombie, zombieBox } from "./zombie";
 
@@ -13,6 +14,10 @@ export interface WeaponType {
   noise: number;
   /** Pixels a hit shoves the zombie along the shot. */
   knockback: number;
+  /** Rounds in a full magazine. */
+  mag: number;
+  /** Seconds to swap a magazine. Reserve ammo is unlimited. */
+  reload: number;
 }
 
 export const WEAPONS: Record<string, WeaponType> = weaponTypes;
@@ -28,6 +33,24 @@ export interface Shot {
 
 const STEP = 4;
 const FLASH = 0.08;
+
+/** Can the trigger do anything right now? */
+export function canFire(p: PlayerState): boolean {
+  return p.cooldown === 0 && p.reload === 0 && p.ammo > 0;
+}
+
+/**
+ * The ammo clock, run once a tick: finish a reload in progress, or start one when
+ * asked for or when the magazine has run dry.
+ */
+export function stepReload(p: PlayerState, type: WeaponType, want: boolean, dt: number): void {
+  if (p.reload > 0) {
+    p.reload = Math.max(0, p.reload - dt);
+    if (p.reload === 0) p.ammo = type.mag;
+    return;
+  }
+  if ((want || p.ammo === 0) && p.ammo < type.mag) p.reload = type.reload;
+}
 
 /** Hitscan: walk the aim line until a wall or the first zombie, up to range. Instant. */
 export function fireWeapon(w: World, type: WeaponType): Shot {

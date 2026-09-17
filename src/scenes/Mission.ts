@@ -21,7 +21,7 @@ import { createWorld, stepWorld, type World } from "../sim/world";
 import type { MissionResult } from "./Base";
 
 type Keys = Record<
-  "W" | "A" | "S" | "D" | "UP" | "LEFT" | "DOWN" | "RIGHT" | "E" | "ENTER" | "ESC",
+  "W" | "A" | "S" | "D" | "UP" | "LEFT" | "DOWN" | "RIGHT" | "E" | "R" | "ENTER" | "ESC",
   Phaser.Input.Keyboard.Key
 >;
 
@@ -73,7 +73,7 @@ export class Mission extends Phaser.Scene {
 
     const keyboard = this.input.keyboard;
     if (!keyboard) throw new Error("keyboard input unavailable");
-    this.keys = keyboard.addKeys("W,A,S,D,UP,LEFT,DOWN,RIGHT,E,ENTER,ESC") as Keys;
+    this.keys = keyboard.addKeys("W,A,S,D,UP,LEFT,DOWN,RIGHT,E,R,ENTER,ESC") as Keys;
     keyboard.on("keydown-BACKTICK", () => this.debug.toggle());
     this.input.on("pointerdown", () => {
       this.fire = true;
@@ -171,7 +171,10 @@ export class Mission extends Phaser.Scene {
     this.debug.sync(w);
 
     const item = w.carrying ? "   ITEM" : "";
-    this.hud.setText(`HP ${w.player.hp}   ${w.player.weapon}   zombies ${w.zombies.length}${item}`);
+    const ammo = w.player.reload > 0 ? "RELOADING" : `${w.player.ammo}`;
+    this.hud.setText(
+      `HP ${w.player.hp}   ${w.player.weapon} ${ammo}   zombies ${w.zombies.length}${item}`,
+    );
   }
 
   private readInput(): Omit<PlayerInput, "fire"> {
@@ -184,6 +187,7 @@ export class Mission extends Phaser.Scene {
       moveY: Number(k.S.isDown || k.DOWN.isDown) - Number(k.W.isDown || k.UP.isDown),
       aimX: aim.x,
       aimY: aim.y,
+      reload: k.R.isDown,
     };
   }
 }
